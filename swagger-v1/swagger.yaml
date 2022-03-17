@@ -1,0 +1,595 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Webhook API",
+    "description" : "API for managing GoCart webhook integrations.",
+    "version" : "1.0.1"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1",
+    "description" : "SwaggerHub API Auto Mocking"
+  } ],
+  "tags" : [ {
+    "name" : "Subscriptions",
+    "description" : "Operations available to manage a merchant's webhook subscriptions"
+  }, {
+    "name" : "Events",
+    "description" : "Operations available to retrieve events"
+  } ],
+  "paths" : {
+    "/webhook/subscriptions" : {
+      "get" : {
+        "tags" : [ "Subscriptions" ],
+        "summary" : "Get all subscriptions for a given partner",
+        "description" : "Used to get all subscriptions for a partner. With no partnerId specified, will return subscriptions for the authenticated merchant as well as any of their partner merchants. Specifying a partnerId query parameter will filter this list of subscriptions to only those matching the specified ID\n",
+        "operationId" : "getAllSubscriptions",
+        "parameters" : [ {
+          "name" : "partnerId",
+          "in" : "query",
+          "description" : "pass an optional partnerId to filter the list of returned subscriptions",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All subscriptions for a given merchant",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/SubscriptionResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "partnerId not found"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Subscriptions" ],
+        "summary" : "Create a new subscription",
+        "description" : "Used to create a new subscription for a merchant",
+        "operationId" : "createSubscription",
+        "requestBody" : {
+          "description" : "Subscription to create",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SubscriptionInput"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Subscription created successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request body"
+          }
+        }
+      }
+    },
+    "/webhook/subscriptions/{subscriptionId}" : {
+      "get" : {
+        "tags" : [ "Subscriptions" ],
+        "summary" : "Get a single subscription by subscriptionId",
+        "description" : "Used to get a single subscription by ID",
+        "operationId" : "getSubscription",
+        "parameters" : [ {
+          "name" : "subscriptionId",
+          "in" : "path",
+          "description" : "ID of subscription to retrieve",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Subscription matching given subscriptionId",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "subscriptionId not found"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Subscriptions" ],
+        "summary" : "Delete a single subscription by subscriptionId",
+        "description" : "Used to delete a single subscription by ID",
+        "operationId" : "deleteSubscription",
+        "parameters" : [ {
+          "name" : "subscriptionId",
+          "in" : "path",
+          "description" : "ID of subscription to delete",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Subscription deleted successfully"
+          },
+          "404" : {
+            "description" : "subscriptionId not found"
+          }
+        }
+      }
+    },
+    "/webhook/eventTypes" : {
+      "get" : {
+        "tags" : [ "Events" ],
+        "summary" : "Get all eventTypes",
+        "description" : "Used to get all eventTypes that a merchant can subscribe to",
+        "operationId" : "getAllEventTypes",
+        "responses" : {
+          "200" : {
+            "description" : "All eventTypes",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EventType"
+                  }
+                },
+                "example" : [ {
+                  "eventName" : "ORDER_PAYMENT_SUCCESSFUL",
+                  "eventDescription" : "Order successful"
+                }, {
+                  "eventName" : "ORDER_PAYMENT_FAILED",
+                  "eventDescription" : "Order failed"
+                }, {
+                  "eventName" : "PAYMENT_REQUEST_EXPIRED",
+                  "eventDescription" : "Payment request expired"
+                } ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/events" : {
+      "get" : {
+        "tags" : [ "Events" ],
+        "summary" : "Get all events for merchant",
+        "description" : "Used to get all events for a merchant",
+        "operationId" : "getAllEventsForMerchant",
+        "parameters" : [ {
+          "name" : "pageSize",
+          "in" : "query",
+          "description" : "Page size to retrieve",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "number"
+          }
+        }, {
+          "name" : "pageNumber",
+          "in" : "query",
+          "description" : "Page number to retrieve",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "number"
+          }
+        }, {
+          "name" : "dateFrom",
+          "in" : "query",
+          "description" : "Date string representing the beginning of a date range in UTC",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2021-11-03T20:45:35.947437"
+        }, {
+          "name" : "dateTo",
+          "in" : "query",
+          "description" : "DateTime string representing the end of a date range in UTC",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2021-12-03T20:45:35.947437"
+        }, {
+          "name" : "statuses",
+          "in" : "query",
+          "description" : "List of statuses to filter on",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "example" : "FAILURE, SUCCESS"
+        }, {
+          "name" : "eventTypes",
+          "in" : "query",
+          "description" : "List of event types to filter on",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "example" : "ORDER_PAYMENT_FAILED, ORDER_PAYMENT_SUCCEEDED"
+        }, {
+          "name" : "sortBy",
+          "in" : "query",
+          "description" : "Sorting direction controlling sort order by eventStatus",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "ASCENDING"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All eventTypes",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PagedEvents"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/events/{eventId}" : {
+      "get" : {
+        "tags" : [ "Events" ],
+        "summary" : "Get a single event by eventId",
+        "description" : "Used to get a single event by ID",
+        "operationId" : "getEvent",
+        "parameters" : [ {
+          "name" : "eventId",
+          "in" : "path",
+          "description" : "ID of event to retrieve",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Event matching given eventId",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "eventId not found"
+          }
+        }
+      }
+    },
+    "/webhook/events/{eventId}/retry" : {
+      "post" : {
+        "tags" : [ "Events" ],
+        "summary" : "Retry an event notification by event id",
+        "description" : "Used to retry sending an event notication by specified eventId",
+        "operationId" : "retryEvent",
+        "parameters" : [ {
+          "name" : "eventId",
+          "in" : "path",
+          "description" : "ID of event to retry",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Event notification attempted"
+          },
+          "404" : {
+            "description" : "eventId not found"
+          },
+          "500" : {
+            "description" : "Internal error occurred"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "SubscriptionInput" : {
+        "required" : [ "endpoint", "eventSubscriptions", "failureNotificationEmail", "secret" ],
+        "type" : "object",
+        "properties" : {
+          "endpoint" : {
+            "type" : "string",
+            "example" : "https://my-webhook-url"
+          },
+          "failureNotificationEmail" : {
+            "type" : "string",
+            "format" : "email",
+            "example" : "failures@email.com"
+          },
+          "secret" : {
+            "type" : "string",
+            "example" : "ImASecret"
+          },
+          "eventSubscriptions" : {
+            "type" : "array",
+            "example" : [ "ORDER_PAYMENT_SUCCESSFUL", "ORDER_PAYMENT_FAILED", "PAYMENT_REQUEST_EXPIRED" ],
+            "items" : {
+              "$ref" : "#/components/schemas/EventNames"
+            }
+          },
+          "description" : {
+            "maxLength" : 1000,
+            "type" : "string",
+            "example" : "Description of subscription"
+          }
+        }
+      },
+      "SubscriptionResponse" : {
+        "required" : [ "created", "endpoint", "eventSubscriptions", "failureNotificationEmail", "merchantId", "modified", "subscriptionId" ],
+        "type" : "object",
+        "properties" : {
+          "subscriptionId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+          },
+          "merchantId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "a4ce3a25-c8c5-4db1-9798-e5c126c51a6d"
+          },
+          "endpoint" : {
+            "type" : "string",
+            "example" : "https://my-webhook-url"
+          },
+          "failureNotificationEmail" : {
+            "type" : "string",
+            "format" : "email",
+            "example" : "failures@email.com"
+          },
+          "created" : {
+            "type" : "string",
+            "description" : "Creation date time the subscription was created in UTC: 'yyyy-MM-ddTHH:mm:ssZ'",
+            "format" : "timestamp",
+            "example" : "2021-07-28T12:01:38Z"
+          },
+          "modified" : {
+            "type" : "string",
+            "description" : "Date time the subscription was last modified in UTC: 'yyyy-MM-ddTHH:mm:ssZ'",
+            "format" : "timestamp",
+            "example" : "2021-07-30T01:10:16Z"
+          },
+          "eventSubscriptions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EventType"
+            }
+          },
+          "description" : {
+            "maxLength" : 1000,
+            "type" : "string",
+            "example" : "Description of subscription"
+          }
+        }
+      },
+      "EventType" : {
+        "required" : [ "description", "name" ],
+        "type" : "object",
+        "properties" : {
+          "eventName" : {
+            "$ref" : "#/components/schemas/EventNames"
+          },
+          "eventDescription" : {
+            "type" : "string",
+            "example" : "Order payment successful"
+          }
+        }
+      },
+      "EventNames" : {
+        "type" : "string",
+        "example" : "ORDER_PAYMENT_SUCCESSFUL",
+        "enum" : [ "ORDER_PAYMENT_SUCCESSFUL", "ORDER_PAYMENT_FAILED", "PAYMENT_REQUEST_EXPIRED" ]
+      },
+      "EventStatus" : {
+        "type" : "string",
+        "example" : "SUCCESS",
+        "enum" : [ "TODO", "IN_PROCESS", "SUCCESS", "FAILURE" ]
+      },
+      "EventNotificationAttemptStatus" : {
+        "type" : "string",
+        "example" : "SUCCESS",
+        "enum" : [ "SUCCESS", "FAILURE" ]
+      },
+      "EventNotificationAttempt" : {
+        "required" : [ "notificationAttemptStatus", "responseCode" ],
+        "type" : "object",
+        "properties" : {
+          "notificationAttemptStatus" : {
+            "$ref" : "#/components/schemas/EventNotificationAttemptStatus"
+          },
+          "responseCode" : {
+            "type" : "number",
+            "example" : 200
+          },
+          "failureMessage" : {
+            "type" : "string",
+            "description" : "Optional failure message"
+          }
+        }
+      },
+      "Event" : {
+        "required" : [ "created", "displayStatus", "endpointUrl", "eventId", "eventStatus", "eventType", "merchantId", "notificationAttemptCount", "subscriptionId" ],
+        "type" : "object",
+        "properties" : {
+          "eventId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "3eff4893-1988-4649-accd-2511f37a062c"
+          },
+          "merchantId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "a4ce3a25-c8c5-4db1-9798-e5c126c51a6d"
+          },
+          "subscriptionId" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+          },
+          "eventType" : {
+            "$ref" : "#/components/schemas/EventType"
+          },
+          "eventStatus" : {
+            "$ref" : "#/components/schemas/EventStatus"
+          },
+          "notificationAttemptCount" : {
+            "type" : "number",
+            "example" : 1
+          },
+          "notificationAttempts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EventNotificationAttempt"
+            }
+          },
+          "endpointUrl" : {
+            "type" : "string",
+            "description" : "Subscription's callback URL"
+          },
+          "created" : {
+            "type" : "string",
+            "description" : "DateTime of event creation specified in UTC"
+          },
+          "displayStatus" : {
+            "type" : "string",
+            "description" : "Mapping of event status to UI friendly status"
+          }
+        }
+      },
+      "PagedEvents" : {
+        "type" : "object",
+        "properties" : {
+          "description" : {
+            "$ref" : "#/components/schemas/PagedEvents_description"
+          },
+          "links" : {
+            "$ref" : "#/components/schemas/PagedEvents_links"
+          },
+          "data" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Event"
+            }
+          }
+        },
+        "description" : "Pagination result for events"
+      },
+      "PagedEvents_description" : {
+        "type" : "object",
+        "properties" : {
+          "totalRecords" : {
+            "type" : "number",
+            "description" : "Total number of records"
+          },
+          "totalPages" : {
+            "type" : "number",
+            "description" : "Total number of pages"
+          },
+          "pageNumber" : {
+            "type" : "number",
+            "description" : "Requested page number"
+          },
+          "pageSize" : {
+            "type" : "number",
+            "description" : "Number of records per page"
+          },
+          "unseenRecords" : {
+            "type" : "number",
+            "description" : "Number of records that occurred AFTER dateTo (if specified)"
+          }
+        }
+      },
+      "PagedEvents_links" : {
+        "type" : "object",
+        "properties" : {
+          "previousPage" : {
+            "type" : "string",
+            "description" : "Link to previous page if it exists"
+          },
+          "nextPage" : {
+            "type" : "string",
+            "description" : "Link to next page if it exists"
+          },
+          "firstPage" : {
+            "type" : "string",
+            "description" : "Link to first page if more than one page exists"
+          },
+          "lastPage" : {
+            "type" : "string",
+            "description" : "Link to last page if more than one page exists"
+          }
+        }
+      }
+    }
+  }
+}
