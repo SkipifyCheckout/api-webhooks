@@ -8,35 +8,43 @@
   "servers" : [ {
     "url" : "https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1",
     "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "https://api-staging.gocartpay.com",
+    "description" : "GoCart Staging Environment"
+  }, {
+    "url" : "https://api.gocartpay.com/",
+    "description" : "GoCart Production Environment"
   } ],
   "tags" : [ {
     "name" : "Subscriptions",
     "description" : "Operations available to manage a merchant's webhook subscriptions"
   }, {
     "name" : "Events",
-    "description" : "Operations available to retrieve events"
+    "description" : "Operations related to managing a merchant's webhook event notifications"
   } ],
   "paths" : {
     "/webhook/subscriptions" : {
       "get" : {
         "tags" : [ "Subscriptions" ],
-        "summary" : "Get all subscriptions for a given partner",
-        "description" : "Used to get all subscriptions for a partner. With no partnerId specified, will return subscriptions for the authenticated merchant as well as any of their partner merchants. Specifying a partnerId query parameter will filter this list of subscriptions to only those matching the specified ID\n",
+        "summary" : "Get all subscriptions for a given partner (a.k.a. merchant).",
+        "description" : "Used to get all subscriptions for a partner. With no partnerId (a.k.a. merchantId)\nspecified, will return subscriptions for the authenticated merchant as\nwell as any of their partner merchants. Specifying a partnerId query\nparameter will filter this list of subscriptions to only those matching\nthe specified ID.\n\nA valid **JWT** or **HMAC** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchant the JWT/HMAC is created under.\n",
         "operationId" : "getAllSubscriptions",
         "parameters" : [ {
           "name" : "partnerId",
           "in" : "query",
-          "description" : "pass an optional partnerId to filter the list of returned subscriptions",
+          "description" : "Pass an optional partnerId to filter the list of returned\nsubscriptions by this identifier\n",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "fdf39d5b-752d-449a-9d14-bbc5dbfbee72"
           }
         } ],
         "responses" : {
           "200" : {
-            "description" : "All subscriptions for a given merchant",
+            "description" : "All webhook subscriptions for a given merchant",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -55,8 +63,8 @@
       },
       "post" : {
         "tags" : [ "Subscriptions" ],
-        "summary" : "Create a new subscription",
-        "description" : "Used to create a new subscription for a merchant",
+        "summary" : "Create a new webhook subscription",
+        "description" : "Used to create a new webhook subscription for a merchant.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "createSubscription",
         "requestBody" : {
           "description" : "Subscription to create",
@@ -88,20 +96,21 @@
     "/webhook/subscriptions/{subscriptionId}" : {
       "get" : {
         "tags" : [ "Subscriptions" ],
-        "summary" : "Get a single subscription by subscriptionId",
-        "description" : "Used to get a single subscription by ID",
+        "summary" : "Get a single webhook subscription by subscriptionId",
+        "description" : "Used to get a single subscription by the passed in subscriptionId.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "getSubscription",
         "parameters" : [ {
           "name" : "subscriptionId",
           "in" : "path",
-          "description" : "ID of subscription to retrieve",
+          "description" : "The webhook subscription id\n",
           "required" : true,
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string"
-          },
-          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "655f09c7-5e07-42dc-8010-91235849cc5c"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -122,19 +131,20 @@
       "delete" : {
         "tags" : [ "Subscriptions" ],
         "summary" : "Delete a single subscription by subscriptionId",
-        "description" : "Used to delete a single subscription by ID",
+        "description" : "Used to delete a single subscription by subscriptionId.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "deleteSubscription",
         "parameters" : [ {
           "name" : "subscriptionId",
           "in" : "path",
-          "description" : "ID of subscription to delete",
+          "description" : "The webhook subscription id\n",
           "required" : true,
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string"
-          },
-          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "655f09c7-5e07-42dc-8010-91235849cc5c"
+          }
         } ],
         "responses" : {
           "204" : {
@@ -150,7 +160,7 @@
       "get" : {
         "tags" : [ "Events" ],
         "summary" : "Get all eventTypes",
-        "description" : "Used to get all eventTypes that a merchant can subscribe to",
+        "description" : "Used to get all eventTypes that a merchant can subscribe to.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "getAllEventTypes",
         "responses" : {
           "200" : {
@@ -183,27 +193,30 @@
       "get" : {
         "tags" : [ "Events" ],
         "summary" : "Get all events for merchant",
-        "description" : "Used to get all events for a merchant",
+        "description" : "Used to get all events for a merchant.\n\nA valid **JWT** or **HMAC** is required to access this endpoint. The list of events returned is based on the scope of the merchant the JWT/HMAC is created under.\n",
         "operationId" : "getAllEventsForMerchant",
         "parameters" : [ {
           "name" : "pageSize",
           "in" : "query",
-          "description" : "Page size to retrieve",
+          "description" : "The number of items per page\n",
           "required" : false,
-          "style" : "form",
-          "explode" : true,
           "schema" : {
-            "type" : "number"
+            "maximum" : 50,
+            "minimum" : 1,
+            "type" : "integer",
+            "example" : 25,
+            "default" : 25
           }
         }, {
           "name" : "pageNumber",
           "in" : "query",
-          "description" : "Page number to retrieve",
+          "description" : "The page number to fetch\n",
           "required" : false,
-          "style" : "form",
-          "explode" : true,
           "schema" : {
-            "type" : "number"
+            "minimum" : 1,
+            "type" : "integer",
+            "example" : 1,
+            "default" : 1
           }
         }, {
           "name" : "dateFrom",
@@ -288,19 +301,20 @@
       "get" : {
         "tags" : [ "Events" ],
         "summary" : "Get a single event by eventId",
-        "description" : "Used to get a single event by ID",
+        "description" : "Used to get a single event by eventId.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "getEvent",
         "parameters" : [ {
           "name" : "eventId",
           "in" : "path",
-          "description" : "ID of event to retrieve",
+          "description" : "The webhook event id\n",
           "required" : true,
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string"
-          },
-          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "3a60492f-9b68-45b2-b6fb-1585d1a3a89e"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -323,19 +337,20 @@
       "post" : {
         "tags" : [ "Events" ],
         "summary" : "Retry an event notification by event id",
-        "description" : "Used to retry sending an event notication by specified eventId",
+        "description" : "Used to retry sending an event notication by specified eventId.\n\nA valid **JWT** or **HMAC** is required to access this endpoint.\n",
         "operationId" : "retryEvent",
         "parameters" : [ {
           "name" : "eventId",
           "in" : "path",
-          "description" : "ID of event to retry",
+          "description" : "The webhook event id\n",
           "required" : true,
           "style" : "simple",
           "explode" : false,
           "schema" : {
-            "type" : "string"
-          },
-          "example" : "2b0df5e4-52ac-495e-b3d1-2879b9486f53"
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "3a60492f-9b68-45b2-b6fb-1585d1a3a89e"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -588,6 +603,60 @@
             "type" : "string",
             "description" : "Link to last page if more than one page exists"
           }
+        }
+      }
+    },
+    "parameters" : {
+      "SubscriptionPathId" : {
+        "name" : "subscriptionId",
+        "in" : "path",
+        "description" : "The webhook subscription id\n",
+        "required" : true,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "655f09c7-5e07-42dc-8010-91235849cc5c"
+        }
+      },
+      "SubscriptionQueryId" : {
+        "name" : "subscriptionId",
+        "in" : "query",
+        "description" : "The webhook subscription id\n",
+        "required" : false,
+        "style" : "form",
+        "explode" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "655f09c7-5e07-42dc-8010-91235849cc5c"
+        }
+      },
+      "PartnerId" : {
+        "name" : "partnerId",
+        "in" : "query",
+        "description" : "Pass an optional partnerId to filter the list of returned\nsubscriptions by this identifier\n",
+        "required" : false,
+        "style" : "form",
+        "explode" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "fdf39d5b-752d-449a-9d14-bbc5dbfbee72"
+        }
+      },
+      "EventId" : {
+        "name" : "eventId",
+        "in" : "path",
+        "description" : "The webhook event id\n",
+        "required" : true,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string",
+          "format" : "uuid",
+          "example" : "3a60492f-9b68-45b2-b6fb-1585d1a3a89e"
         }
       }
     }
