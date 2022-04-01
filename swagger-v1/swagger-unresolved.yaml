@@ -15,16 +15,12 @@ paths:
         - Subscriptions
       summary: Get all subscriptions for a given partner (a.k.a. merchant).
       description: |
-        Used to get all subscriptions for a partner. With no partnerId (a.k.a. merchantId)
-        specified, will return subscriptions for the authenticated merchant as
-        well as any of their partner merchants. Specifying a partnerId query
-        parameter will filter this list of subscriptions to only those matching
-        the specified ID.
+        Used to get all subscriptions for a merchant specified in the query parameter
         
-        A valid **JWT** or **HMAC** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchant the JWT/HMAC is created under.
+        A valid **JWT** or **HMAC** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchantId specified in the query parameter.
       operationId: getAllSubscriptions
       parameters:
-        - $ref: '#/components/parameters/PartnerId'
+        - $ref: '#/components/parameters/MerchantId'
       responses:
         '200':
           description: All webhook subscriptions for a given merchant
@@ -45,6 +41,8 @@ paths:
         
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: createSubscription
+      parameters:
+        - $ref: '#/components/parameters/MerchantId'
       requestBody:
         description: Subscription to create
         content:
@@ -60,6 +58,7 @@ paths:
                 $ref: '#/components/schemas/SubscriptionResponse'
         '400':
           description: Bad request body
+
           
   /webhook/subscriptions/{subscriptionId}:
     get:
@@ -82,20 +81,54 @@ paths:
                 $ref: '#/components/schemas/SubscriptionResponse'
         '404':
           description: subscriptionId not found
+    put:
+      tags:
+        - Subscriptions
+      summary: Update a webhook subscription
+      description: |
+        Used to update a webhook subscription for the merchant specified in the query parameter.
+        
+        A valid **JWT** or **HMAC** is required to access this endpoint.
+      operationId: updateSubscription
+      parameters:
+        - $ref: '#/components/parameters/MerchantId'
+        - $ref: '#/components/parameters/SubscriptionPathId'
+      requestBody:
+        description: Subscription to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInput'
+      responses:
+        '201':
+          description: Subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          description: Bad request body
+        '403':
+          description: Forbidden
+        '404':
+          description: subscriptionId not found
     delete:
       tags:
         - Subscriptions
       summary: Delete a single subscription by subscriptionId
       description: |
-        Used to delete a single subscription by subscriptionId.
+        Used to delete a single subscription by subscriptionId for the merchant specified in the query parameter.
         
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: deleteSubscription
       parameters:
+        - $ref: '#/components/parameters/MerchantId'
         - $ref: '#/components/parameters/SubscriptionPathId'
       responses:
         '204':
           description: Subscription deleted successfully
+        '403':
+          description: Forbidden
         '404':
           description: subscriptionId not found
   
@@ -134,9 +167,10 @@ paths:
       description: |
         Used to get all events for a merchant.
         
-        A valid **JWT** or **HMAC** is required to access this endpoint. The list of events returned is based on the scope of the merchant the JWT/HMAC is created under.
+        A valid **JWT** or **HMAC** is required to access this endpoint. The list of events returned is based on the scope of the merchantId passed as a query parameter.
       operationId: getAllEventsForMerchant
       parameters:
+        - $ref: '#/components/parameters/MerchantId'
         - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageSize'
         - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageNumber'
         - name: dateFrom
@@ -270,6 +304,16 @@ components:
         type: string
         format: uuid
         example: fdf39d5b-752d-449a-9d14-bbc5dbfbee72
+    MerchantId:
+      name: merchantId
+      in: query
+      required: true
+      description: |
+        Pass a merchantId to control which merchant an action is taken against
+      schema:
+        type: string
+        format: uuid
+        example: 0017a26d-eaf8-4934-947a-6a005d38224f
     EventId:
       name: eventId
       in: path
@@ -312,6 +356,10 @@ components:
           maxLength: 1000
           type: string
           example: Description of subscription
+        includeChildMerchantEvents:
+          type: boolean
+          description: 'Flag used to determine if the created subscription should include events triggered by children merchants'
+          example: true
     
     SubscriptionResponse:
       required:
@@ -361,6 +409,10 @@ components:
           maxLength: 1000
           type: string
           example: Description of subscription
+        includeChildMerchantEvents:
+          type: boolean
+          description: 'Flag used to determine if the created subscription should include events triggered by children merchants'
+          example: true
     
     EventType:
       required:
