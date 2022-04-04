@@ -3,43 +3,26 @@ info:
   title: Webhook API
   description: API for managing GoCart webhook integrations.
   version: 1.0.1
-servers:
-- url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1
-  description: SwaggerHub API Auto Mocking
-- url: https://api-staging.gocartpay.com
-  description: GoCart Staging Environment
-- url: https://api.gocartpay.com/
-  description: GoCart Production Environment
 tags:
-- name: Subscriptions
-  description: Operations available to manage a merchant's webhook subscriptions
-- name: Events
-  description: Operations related to managing a merchant's webhook event notifications
+  - name: Subscriptions
+    description: Operations available to manage a merchant's webhook subscriptions
+  - name: Events
+    description: Operations related to managing a merchant's webhook event notifications
 paths:
   /webhook/subscriptions:
     get:
       tags:
-      - Subscriptions
+        - Subscriptions
       summary: Get all subscriptions for a given partner (a.k.a. merchant).
       description: |
         Used to get all subscriptions for a merchant specified in the query parameter
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchantId specified in the query parameter.
       operationId: getAllSubscriptions
       parameters:
-      - name: merchantId
-        in: query
-        description: |
-          Pass a merchantId to control which merchant an action is taken against
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-          example: 0017a26d-eaf8-4934-947a-6a005d38224f
+        - $ref: '#/components/parameters/MerchantId'
       responses:
-        "200":
+        '200':
           description: All webhook subscriptions for a given merchant
           content:
             application/json:
@@ -47,29 +30,19 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubscriptionResponse'
-        "404":
+        '404':
           description: partnerId not found
     post:
       tags:
-      - Subscriptions
+        - Subscriptions
       summary: Create a new webhook subscription
       description: |
         Used to create a new webhook subscription for a merchant.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: createSubscription
       parameters:
-      - name: merchantId
-        in: query
-        description: |
-          Pass a merchantId to control which merchant an action is taken against
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-          example: 0017a26d-eaf8-4934-947a-6a005d38224f
+        - $ref: '#/components/parameters/MerchantId'
       requestBody:
         description: Subscription to create
         content:
@@ -77,77 +50,49 @@ paths:
             schema:
               $ref: '#/components/schemas/SubscriptionInput'
       responses:
-        "201":
+        '201':
           description: Subscription created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionResponse'
-        "400":
+        '400':
           description: Bad request body
+
+          
   /webhook/subscriptions/{subscriptionId}:
     get:
       tags:
-      - Subscriptions
+        - Subscriptions
       summary: Get a single webhook subscription by subscriptionId
       description: |
         Used to get a single subscription by the passed in subscriptionId.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: getSubscription
       parameters:
-      - name: subscriptionId
-        in: path
-        description: |
-          The webhook subscription id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-          example: 655f09c7-5e07-42dc-8010-91235849cc5c
+        - $ref: '#/components/parameters/SubscriptionPathId'
       responses:
-        "200":
+        '200':
           description: Subscription matching given subscriptionId
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionResponse'
-        "404":
+        '404':
           description: subscriptionId not found
     put:
       tags:
-      - Subscriptions
+        - Subscriptions
       summary: Update a webhook subscription
       description: |
         Used to update a webhook subscription for the merchant specified in the query parameter.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: updateSubscription
       parameters:
-      - name: merchantId
-        in: query
-        description: |
-          Pass a merchantId to control which merchant an action is taken against
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-          example: 0017a26d-eaf8-4934-947a-6a005d38224f
-      - name: subscriptionId
-        in: path
-        description: |
-          The webhook subscription id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-          example: 655f09c7-5e07-42dc-8010-91235849cc5c
+        - $ref: '#/components/parameters/MerchantId'
+        - $ref: '#/components/parameters/SubscriptionPathId'
       requestBody:
         description: Subscription to create
         content:
@@ -155,69 +100,50 @@ paths:
             schema:
               $ref: '#/components/schemas/SubscriptionInput'
       responses:
-        "201":
+        '201':
           description: Subscription updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionResponse'
-        "400":
+        '400':
           description: Bad request body
-        "403":
+        '403':
           description: Forbidden
-        "404":
+        '404':
           description: subscriptionId not found
     delete:
       tags:
-      - Subscriptions
+        - Subscriptions
       summary: Delete a single subscription by subscriptionId
       description: |
         Used to delete a single subscription by subscriptionId for the merchant specified in the query parameter.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: deleteSubscription
       parameters:
-      - name: merchantId
-        in: query
-        description: |
-          Pass a merchantId to control which merchant an action is taken against
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-          example: 0017a26d-eaf8-4934-947a-6a005d38224f
-      - name: subscriptionId
-        in: path
-        description: |
-          The webhook subscription id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-          example: 655f09c7-5e07-42dc-8010-91235849cc5c
+        - $ref: '#/components/parameters/MerchantId'
+        - $ref: '#/components/parameters/SubscriptionPathId'
       responses:
-        "204":
+        '204':
           description: Subscription deleted successfully
-        "403":
+        '403':
           description: Forbidden
-        "404":
+        '404':
           description: subscriptionId not found
+  
   /webhook/eventTypes:
     get:
       tags:
-      - Events
+        - Events
       summary: Get all eventTypes
       description: |
         Used to get all eventTypes that a merchant can subscribe to.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: getAllEventTypes
       responses:
-        "200":
+        '200':
           description: All eventTypes
           content:
             application/json:
@@ -225,94 +151,67 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EventType'
+
+  
   /webhook/events:
     get:
       tags:
-      - Events
+        - Events
       summary: Get all events for merchant
       description: |
         Used to get all events for a merchant.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint. The list of events returned is based on the scope of the merchantId passed as a query parameter.
       operationId: getAllEventsForMerchant
       parameters:
-      - name: merchantId
-        in: query
-        description: |
-          Pass a merchantId to control which merchant an action is taken against
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-          example: 0017a26d-eaf8-4934-947a-6a005d38224f
-      - name: pageSize
-        in: query
-        description: |
-          The number of items per page
-        required: false
-        schema:
-          maximum: 50
-          minimum: 1
-          type: integer
-          example: 25
-          default: 25
-      - name: pageNumber
-        in: query
-        description: |
-          The page number to fetch
-        required: false
-        schema:
-          minimum: 1
-          type: integer
-          example: 1
-          default: 1
-      - name: dateFrom
-        in: query
-        description: Date string representing the beginning of a date range in UTC
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-        example: 2021-11-03T20:45:35.947437
-      - name: dateTo
-        in: query
-        description: DateTime string representing the end of a date range in UTC
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-        example: 2021-12-03T20:45:35.947437
-      - name: statuses
-        in: query
-        description: List of statuses to filter on
-        required: false
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/EventStatusArray'
-      - name: eventTypes
-        in: query
-        description: List of event types to filter on
-        required: false
-        style: form
-        explode: true
-        schema:
-          $ref: '#/components/schemas/EventNameArray'
-      - name: sortBy
-        in: query
-        description: Sorting direction controlling sort order by eventStatus
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-        example: ASCENDING
+        - $ref: '#/components/parameters/MerchantId'
+        - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageSize'
+        - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageNumber'
+        - name: dateFrom
+          in: query
+          description: Date string representing the beginning of a date range in UTC
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: '2021-11-03T20:45:35.947437'
+        - name: dateTo
+          in: query
+          description: DateTime string representing the end of a date range in UTC
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: '2021-12-03T20:45:35.947437'
+        - name: statuses
+          in: query
+          description: List of statuses to filter on
+          required: false
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/EventStatusArray'
+        - name: eventTypes
+          in: query
+          description: List of event types to filter on
+          required: false
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/EventNameArray'
+        - name: sortBy
+          in: query
+          description: Sorting direction controlling sort order by eventStatus
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: ASCENDING
       responses:
-        "200":
+        '200':
           description: All eventTypes
           content:
             application/json:
@@ -323,71 +222,104 @@ paths:
   /webhook/events/{eventId}:
     get:
       tags:
-      - Events
+        - Events
       summary: Get a single event by eventId
       description: |
         Used to get a single event by eventId.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: getEvent
       parameters:
-      - name: eventId
-        in: path
-        description: |
-          The webhook event id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-          example: 3a60492f-9b68-45b2-b6fb-1585d1a3a89e
+        - $ref: '#/components/parameters/EventId'
       responses:
-        "200":
+        '200':
           description: Event matching given eventId
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Event'
-        "404":
+        '404':
           description: eventId not found
   /webhook/events/{eventId}/retry:
     post:
       tags:
-      - Events
+        - Events
       summary: Retry an event notification by event id
       description: |
         Used to retry sending an event notication by specified eventId.
-
+        
         A valid **JWT** or **HMAC** is required to access this endpoint.
       operationId: retryEvent
       parameters:
-      - name: eventId
-        in: path
-        description: |
-          The webhook event id
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-          example: 3a60492f-9b68-45b2-b6fb-1585d1a3a89e
+        - $ref: '#/components/parameters/EventId'
       responses:
-        "200":
+        '200':
           description: Event notification attempted
-        "404":
+        '404':
           description: eventId not found
-        "500":
+        '500':
           description: Internal error occurred
 components:
+  parameters:
+    SubscriptionPathId:
+      name: subscriptionId
+      in: path
+      required: true
+      description: |
+        The webhook subscription id
+      schema:
+        type: string
+        format: uuid
+        example: 655f09c7-5e07-42dc-8010-91235849cc5c
+    SubscriptionQueryId:
+      name: subscriptionId
+      in: query
+      required: false
+      description: |
+        The webhook subscription id
+      schema:
+        type: string
+        format: uuid
+        example: 655f09c7-5e07-42dc-8010-91235849cc5c
+    PartnerId:
+      name: partnerId
+      in: query
+      required: false
+      description: |
+        Pass an optional partnerId to filter the list of returned
+        subscriptions by this identifier
+      schema:
+        type: string
+        format: uuid
+        example: fdf39d5b-752d-449a-9d14-bbc5dbfbee72
+    MerchantId:
+      name: merchantId
+      in: query
+      required: true
+      description: |
+        Pass a merchantId to control which merchant an action is taken against
+      schema:
+        type: string
+        format: uuid
+        example: 0017a26d-eaf8-4934-947a-6a005d38224f
+    EventId:
+      name: eventId
+      in: path
+      required: true
+      description: |
+        The webhook event id
+      schema:
+        type: string
+        format: uuid
+        example: 3a60492f-9b68-45b2-b6fb-1585d1a3a89e
+        
   schemas:
     SubscriptionInput:
       required:
-      - endpoint
-      - eventSubscriptions
-      - failureNotificationEmail
-      - secret
+        - endpoint
+        - eventSubscriptions
+        - failureNotificationEmail
+        - secret
       type: object
       properties:
         endpoint:
@@ -408,18 +340,18 @@ components:
           example: Description of subscription
         includeChildMerchantEvents:
           type: boolean
-          description: Flag used to determine if the created subscription should include
-            events triggered by children merchants
+          description: 'Flag used to determine if the created subscription should include events triggered by children merchants'
           example: true
+    
     SubscriptionResponse:
       required:
-      - created
-      - endpoint
-      - eventSubscriptions
-      - failureNotificationEmail
-      - merchantId
-      - modified
-      - subscriptionId
+        - created
+        - endpoint
+        - eventSubscriptions
+        - failureNotificationEmail
+        - merchantId
+        - modified
+        - subscriptionId
       type: object
       properties:
         subscriptionId:
@@ -439,14 +371,18 @@ components:
           example: failures@email.com
         created:
           type: string
-          description: "Creation date time the subscription was created in UTC: 'yyyy-MM-ddTHH:mm:ssZ'"
+          description: >-
+            Creation date time the subscription was created in UTC:
+            'yyyy-MM-ddTHH:mm:ssZ'
           format: timestamp
-          example: 2021-07-28T12:01:38Z
+          example: '2021-07-28T12:01:38Z'
         modified:
           type: string
-          description: "Date time the subscription was last modified in UTC: 'yyyy-MM-ddTHH:mm:ssZ'"
+          description: >-
+            Date time the subscription was last modified in UTC:
+            'yyyy-MM-ddTHH:mm:ssZ'
           format: timestamp
-          example: 2021-07-30T01:10:16Z
+          example: '2021-07-30T01:10:16Z'
         eventSubscriptions:
           type: array
           items:
@@ -457,13 +393,13 @@ components:
           example: Description of subscription
         includeChildMerchantEvents:
           type: boolean
-          description: Flag used to determine if the created subscription should include
-            events triggered by children merchants
+          description: 'Flag used to determine if the created subscription should include events triggered by children merchants'
           example: true
+    
     EventType:
       required:
-      - description
-      - name
+        - description
+        - name
       type: object
       properties:
         eventName:
@@ -471,44 +407,50 @@ components:
         eventDescription:
           type: string
           example: Order payment successful
+          
     EventNameArray:
       type: array
-      example:
-      - ORDER_PAYMENT_SUCCESSFUL
-      - ORDER_PAYMENT_FAILED
-      items:
+      example: 
+        - ORDER_PAYMENT_SUCCESSFUL
+        - ORDER_PAYMENT_FAILED
+      items: 
         $ref: '#/components/schemas/EventNames'
+    
     EventNames:
       type: string
       enum:
-      - ORDER_PAYMENT_SUCCESSFUL
-      - ORDER_PAYMENT_FAILED
-      - PAYMENT_REQUEST_EXPIRED
+        - ORDER_PAYMENT_SUCCESSFUL
+        - ORDER_PAYMENT_FAILED
+        - PAYMENT_REQUEST_EXPIRED
+    
     EventStatusArray:
       type: array
       example:
-      - SUCCESS
-      - FAILURE
+        - SUCCESS
+        - FAILURE
       items:
         $ref: '#/components/schemas/EventStatus'
+        
     EventStatus:
       type: string
       example: SUCCESS
       enum:
-      - TODO
-      - IN_PROCESS
-      - SUCCESS
-      - FAILURE
+        - TODO
+        - IN_PROCESS
+        - SUCCESS
+        - FAILURE
+    
     EventNotificationAttemptStatus:
       type: string
       example: SUCCESS
       enum:
-      - SUCCESS
-      - FAILURE
+        - SUCCESS
+        - FAILURE
+    
     EventNotificationAttempt:
       required:
-      - notificationAttemptStatus
-      - responseCode
+        - notificationAttemptStatus
+        - responseCode
       type: object
       properties:
         notificationAttemptStatus:
@@ -519,17 +461,18 @@ components:
         failureMessage:
           type: string
           description: Optional failure message
+    
     Event:
       required:
-      - created
-      - displayStatus
-      - endpointUrl
-      - eventId
-      - eventStatus
-      - eventType
-      - merchantId
-      - notificationAttemptCount
-      - subscriptionId
+        - created
+        - displayStatus
+        - endpointUrl
+        - eventId
+        - eventStatus
+        - eventType
+        - merchantId
+        - notificationAttemptCount
+        - subscriptionId
       type: object
       properties:
         eventId:
@@ -564,6 +507,7 @@ components:
         displayStatus:
           type: string
           description: Mapping of event status to UI friendly status
+    
     PagedEvents:
       type: object
       properties:
@@ -576,6 +520,7 @@ components:
           items:
             $ref: '#/components/schemas/Event'
       description: Pagination result for events
+    
     PagedEvents_description:
       type: object
       properties:
@@ -594,6 +539,7 @@ components:
         unseenRecords:
           type: number
           description: Number of records that occurred AFTER dateTo (if specified)
+    
     PagedEvents_links:
       type: object
       properties:
@@ -609,65 +555,11 @@ components:
         lastPage:
           type: string
           description: Link to last page if more than one page exists
-  parameters:
-    SubscriptionPathId:
-      name: subscriptionId
-      in: path
-      description: |
-        The webhook subscription id
-      required: true
-      style: simple
-      explode: false
-      schema:
-        type: string
-        format: uuid
-        example: 655f09c7-5e07-42dc-8010-91235849cc5c
-    SubscriptionQueryId:
-      name: subscriptionId
-      in: query
-      description: |
-        The webhook subscription id
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: string
-        format: uuid
-        example: 655f09c7-5e07-42dc-8010-91235849cc5c
-    PartnerId:
-      name: partnerId
-      in: query
-      description: |
-        Pass an optional partnerId to filter the list of returned
-        subscriptions by this identifier
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: string
-        format: uuid
-        example: fdf39d5b-752d-449a-9d14-bbc5dbfbee72
-    MerchantId:
-      name: merchantId
-      in: query
-      description: |
-        Pass a merchantId to control which merchant an action is taken against
-      required: true
-      style: form
-      explode: true
-      schema:
-        type: string
-        format: uuid
-        example: 0017a26d-eaf8-4934-947a-6a005d38224f
-    EventId:
-      name: eventId
-      in: path
-      description: |
-        The webhook event id
-      required: true
-      style: simple
-      explode: false
-      schema:
-        type: string
-        format: uuid
-        example: 3a60492f-9b68-45b2-b6fb-1585d1a3a89e
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1
+  - url: https://api-staging.gocartpay.com
+    description: GoCart Staging Environment
+  - url: https://api.gocartpay.com/
+    description: GoCart Production Environment
