@@ -225,13 +225,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EventType'
-              example:
-              - eventName: ORDER_PAYMENT_SUCCESSFUL
-                eventDescription: Order successful
-              - eventName: ORDER_PAYMENT_FAILED
-                eventDescription: Order failed
-              - eventName: PAYMENT_REQUEST_EXPIRED
-                eventDescription: Payment request expired
   /webhook/events:
     get:
       tags:
@@ -300,10 +293,7 @@ paths:
         style: form
         explode: true
         schema:
-          type: array
-          items:
-            type: string
-        example: "FAILURE, SUCCESS"
+          $ref: '#/components/schemas/EventStatusArray'
       - name: eventTypes
         in: query
         description: List of event types to filter on
@@ -311,10 +301,7 @@ paths:
         style: form
         explode: true
         schema:
-          type: array
-          items:
-            type: string
-        example: "ORDER_PAYMENT_FAILED, ORDER_PAYMENT_SUCCEEDED"
+          $ref: '#/components/schemas/EventNameArray'
       - name: sortBy
         in: query
         description: Sorting direction controlling sort order by eventStatus
@@ -414,13 +401,7 @@ components:
           type: string
           example: ImASecret
         eventSubscriptions:
-          type: array
-          example:
-          - ORDER_PAYMENT_SUCCESSFUL
-          - ORDER_PAYMENT_FAILED
-          - PAYMENT_REQUEST_EXPIRED
-          items:
-            $ref: '#/components/schemas/EventNames'
+          $ref: '#/components/schemas/EventNameArray'
         description:
           maxLength: 1000
           type: string
@@ -490,13 +471,26 @@ components:
         eventDescription:
           type: string
           example: Order payment successful
+    EventNameArray:
+      type: array
+      example:
+      - ORDER_PAYMENT_SUCCESSFUL
+      - ORDER_PAYMENT_FAILED
+      items:
+        $ref: '#/components/schemas/EventNames'
     EventNames:
       type: string
-      example: ORDER_PAYMENT_SUCCESSFUL
       enum:
       - ORDER_PAYMENT_SUCCESSFUL
       - ORDER_PAYMENT_FAILED
       - PAYMENT_REQUEST_EXPIRED
+    EventStatusArray:
+      type: array
+      example:
+      - SUCCESS
+      - FAILURE
+      items:
+        $ref: '#/components/schemas/EventStatus'
     EventStatus:
       type: string
       example: SUCCESS
