@@ -2,9 +2,9 @@ openapi: 3.0.0
 info:
   title: Webhook API
   description: API for managing GoCart webhook integrations.
-  version: 1.0.1
+  version: 1.0.2
 servers:
-- url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1
+- url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.2
   description: SwaggerHub API Auto Mocking
 - url: https://api-staging.gocartpay.com
   description: GoCart Staging Environment
@@ -610,6 +610,54 @@ components:
           type: string
           description: Link to last page if more than one page exists
   parameters:
+    DateFromQueryFilter:
+      name: dateFrom
+      in: query
+      description: Date string representing the beginning of a date range in UTC
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: 2021-11-03T20:45:35.947437
+    DateToQueryFilter:
+      name: dateTo
+      in: query
+      description: DateTime string representing the end of a date range in UTC
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: 2021-12-03T20:45:35.947437
+    EventsTypesQueryFilter:
+      name: eventTypes
+      in: query
+      description: List of event types to filter on
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/EventNameArray'
+    SortByQueryFilter:
+      name: sortBy
+      in: query
+      description: Sorting direction controlling sort order by eventStatus
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: ASCENDING
+    StatusesQueryFilter:
+      name: statuses
+      in: query
+      description: List of statuses to filter on
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/EventStatusArray'
     SubscriptionPathId:
       name: subscriptionId
       in: path

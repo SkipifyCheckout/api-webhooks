@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Webhook API
   description: API for managing GoCart webhook integrations.
-  version: 1.0.1
+  version: 1.0.2
 tags:
   - name: Subscriptions
     description: Operations available to manage a merchant's webhook subscriptions
@@ -167,49 +167,11 @@ paths:
         - $ref: '#/components/parameters/MerchantId'
         - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageSize'
         - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageNumber'
-        - name: dateFrom
-          in: query
-          description: Date string representing the beginning of a date range in UTC
-          required: false
-          style: form
-          explode: true
-          schema:
-            type: string
-          example: '2021-11-03T20:45:35.947437'
-        - name: dateTo
-          in: query
-          description: DateTime string representing the end of a date range in UTC
-          required: false
-          style: form
-          explode: true
-          schema:
-            type: string
-          example: '2021-12-03T20:45:35.947437'
-        - name: statuses
-          in: query
-          description: List of statuses to filter on
-          required: false
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/EventStatusArray'
-        - name: eventTypes
-          in: query
-          description: List of event types to filter on
-          required: false
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/EventNameArray'
-        - name: sortBy
-          in: query
-          description: Sorting direction controlling sort order by eventStatus
-          required: false
-          style: form
-          explode: true
-          schema:
-            type: string
-          example: ASCENDING
+        - $ref: '#/components/parameters/DateFromQueryFilter'
+        - $ref: '#/components/parameters/DateToQueryFilter'
+        - $ref: '#/components/parameters/StatusesQueryFilter'
+        - $ref: '#/components/parameters/EventsTypesQueryFilter'
+        - $ref: '#/components/parameters/SortByQueryFilter'
       responses:
         '200':
           description: All eventTypes
@@ -261,6 +223,54 @@ paths:
           description: Internal error occurred
 components:
   parameters:
+    DateFromQueryFilter:
+      name: dateFrom
+      in: query
+      description: Date string representing the beginning of a date range in UTC
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: '2021-11-03T20:45:35.947437'
+    DateToQueryFilter:
+      name: dateTo
+      in: query
+      description: DateTime string representing the end of a date range in UTC
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: '2021-12-03T20:45:35.947437'
+    EventsTypesQueryFilter:
+      name: eventTypes
+      in: query
+      description: List of event types to filter on
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/EventNameArray'
+    SortByQueryFilter:
+      name: sortBy
+      in: query
+      description: Sorting direction controlling sort order by eventStatus
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+      example: ASCENDING
+    StatusesQueryFilter:
+      name: statuses
+      in: query
+      description: List of statuses to filter on
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/EventStatusArray'
     SubscriptionPathId:
       name: subscriptionId
       in: path
@@ -270,7 +280,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: 655f09c7-5e07-42dc-8010-91235849cc5c
+        example: "655f09c7-5e07-42dc-8010-91235849cc5c"
     SubscriptionQueryId:
       name: subscriptionId
       in: query
@@ -280,7 +290,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: 655f09c7-5e07-42dc-8010-91235849cc5c
+        example: "655f09c7-5e07-42dc-8010-91235849cc5c"
     PartnerId:
       name: partnerId
       in: query
@@ -291,7 +301,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: fdf39d5b-752d-449a-9d14-bbc5dbfbee72
+        example: "fdf39d5b-752d-449a-9d14-bbc5dbfbee72"
     MerchantId:
       name: merchantId
       in: query
@@ -301,7 +311,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: 0017a26d-eaf8-4934-947a-6a005d38224f
+        example: "0017a26d-eaf8-4934-947a-6a005d38224f"
     EventId:
       name: eventId
       in: path
@@ -311,7 +321,7 @@ components:
       schema:
         type: string
         format: uuid
-        example: 3a60492f-9b68-45b2-b6fb-1585d1a3a89e
+        example: "3a60492f-9b68-45b2-b6fb-1585d1a3a89e"
         
   schemas:
     SubscriptionInput:
@@ -558,7 +568,7 @@ components:
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.1
+    url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.2
   - url: https://api-staging.gocartpay.com
     description: GoCart Staging Environment
   - url: https://api.gocartpay.com/
