@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: Webhook API
-  description: API for managing GoCart webhook integrations.
-  version: 1.0.3
+  description: API for managing Skipify webhook integrations.
+  version: 1.0.5
 tags:
   - name: Subscriptions
     description: Operations available to manage a merchant's webhook subscriptions
@@ -17,7 +17,7 @@ paths:
       description: |
         Used to get all subscriptions for a merchant specified in the query parameter
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchantId specified in the query parameter.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint. The list of subscriptions returned is based on the scope of the merchantId specified in the query parameter.
       operationId: getAllSubscriptions
       parameters:
         - $ref: '#/components/parameters/MerchantId'
@@ -39,7 +39,7 @@ paths:
       description: |
         Used to create a new webhook subscription for a merchant.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: createSubscription
       parameters:
         - $ref: '#/components/parameters/MerchantId'
@@ -68,7 +68,7 @@ paths:
       description: |
         Used to get a single subscription by the passed in subscriptionId.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: getSubscription
       parameters:
         - $ref: '#/components/parameters/SubscriptionPathId'
@@ -88,7 +88,7 @@ paths:
       description: |
         Used to update a webhook subscription for the merchant specified in the query parameter.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: updateSubscription
       parameters:
         - $ref: '#/components/parameters/MerchantId'
@@ -119,7 +119,7 @@ paths:
       description: |
         Used to delete a single subscription by subscriptionId for the merchant specified in the query parameter.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: deleteSubscription
       parameters:
         - $ref: '#/components/parameters/MerchantId'
@@ -140,7 +140,7 @@ paths:
       description: |
         Used to get all eventTypes that a merchant can subscribe to.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: getAllEventTypes
       responses:
         '200':
@@ -161,12 +161,12 @@ paths:
       description: |
         Used to get all events for a merchant.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint. The list of events returned is based on the scope of the merchantId passed as a query parameter.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint. The list of events returned is based on the scope of the merchantId passed as a query parameter.
       operationId: getAllEventsForMerchant
       parameters:
         - $ref: '#/components/parameters/MerchantId'
-        - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageSize'
-        - $ref: 'https://api.swaggerhub.com/domains/GoCartPay/gocart-core-domain/1.0.0#/components/parameters/PageNumber'
+        - $ref: 'https://api.swaggerhub.com/domains/Skipify/skipify-core-domain/1.0.1#/components/parameters/PageSize'
+        - $ref: 'https://api.swaggerhub.com/domains/Skipify/skipify-core-domain/1.0.1#/components/parameters/PageNumber'
         - $ref: '#/components/parameters/DateFromQueryFilter'
         - $ref: '#/components/parameters/DateToQueryFilter'
         - $ref: '#/components/parameters/StatusesQueryFilter'
@@ -189,7 +189,7 @@ paths:
       description: |
         Used to get a single event by eventId.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: getEvent
       parameters:
         - $ref: '#/components/parameters/EventId'
@@ -210,7 +210,7 @@ paths:
       description: |
         Used to retry sending an event notication by specified eventId.
         
-        A valid **JWT** or **[MAC](https://docs.gocartpay.com/docs/api-authentication-mac)** is required to access this endpoint.
+        A valid **JWT** or **[MAC](https://docs.skipify.com/docs/api-authentication-mac)** is required to access this endpoint.
       operationId: retryEvent
       parameters:
         - $ref: '#/components/parameters/EventId'
@@ -568,8 +568,4 @@ components:
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/GoCartPay/webhook-subscription-management/1.0.3
-  - url: https://api-staging.gocartpay.com
-    description: GoCart Staging Environment
-  - url: https://api.gocartpay.com/
-    description: GoCart Production Environment
+    url: https://virtserver.swaggerhub.com/Skipify/webhook-subscription-management/1.0.5
