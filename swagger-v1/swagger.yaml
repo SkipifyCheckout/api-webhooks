@@ -4,7 +4,7 @@ info:
   description: API for managing Skipify webhook integrations.
   version: 1.0.5
 servers:
-- url: https://virtserver.swaggerhub.com/Skipify/webhook-subscription-management/1.0.4
+- url: https://virtserver.swaggerhub.com/Skipify/webhook-subscription-management/1.0.5
   description: SwaggerHub API Auto Mocking
 tags:
 - name: Subscriptions
